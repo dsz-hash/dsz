@@ -218,6 +218,35 @@ def create_groundtruth_database(dataset_class_name,
                     backend_args=backend_args)
             ])
 
+    elif dataset_class_name == "CarlaDataset":
+        backend_args = dict(backend='local')
+        dataset_cfg.update(
+            test_mode=False,
+            data_prefix=dict(
+                pts='training/velodyne', img='', sweeps='training/velodyne'),
+            modality=dict(
+                use_lidar=True,
+                use_depth=False,
+                use_lidar_intensity=True,
+                use_camera=False,
+            ),
+            pipeline=[
+                dict(
+                    type="LoadPointsFromFile",
+                    coord_type="LIDAR",
+                    load_dim=4,
+                    use_dim=4,
+                    backend_args=backend_args,
+                ),
+                dict(
+                    type="LoadAnnotations3D",
+                    with_bbox_3d=True,
+                    with_label_3d=True,
+                    backend_args=backend_args,
+                ),
+            ],
+        )
+
     dataset = DATASETS.build(dataset_cfg)
 
     if database_save_path is None:
@@ -243,6 +272,7 @@ def create_groundtruth_database(dataset_class_name,
         image_idx = example['sample_idx']
         points = example['points'].numpy()
         gt_boxes_3d = annos['gt_bboxes_3d'].numpy()
+        # gt_boxes_3d = annos['gt_bboxes_3d']
         names = [dataset.metainfo['classes'][i] for i in annos['gt_labels_3d']]
         group_dict = dict()
         if 'group_ids' in annos:

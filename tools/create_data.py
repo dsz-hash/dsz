@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 from os import path as osp
-
+from pathlib import Path
 from mmengine import print_log
 
 from tools.dataset_converters import indoor_converter as indoor
@@ -265,6 +265,43 @@ def semantickitti_data_prep(info_prefix, out_dir):
         info_prefix, out_dir)
 
 
+def carla_data_prep(root_path, out_dir, workers, fusion_type):
+    """Prepare the info file for Carla dataset.
+
+    Args:
+        root_path (str): Path of dataset root.
+        out_dir (str): Output directory of the generated info file.
+        workers (int): Number of threads to be used.
+    """
+    from tools.dataset_converters import carla_3class_converter as carla
+    from tools.dataset_converters import carla_3class_data_utils as carla_utils
+
+    root_path, out_dir = Path(root_path), Path(out_dir)
+
+    # data_infos = carla_utils.load_raw_data_infos(root_path)
+    #
+    # lidar_idxs = map(lambda x: int(x.strip()), fusion_type.split(","))
+    # lidar_idxs = set(lidar_idxs)
+    #
+    # converter = carla.CarlaConverter(
+    #     root_path, out_dir,
+    #     raw_data_infos=data_infos,
+    #     num_workers=workers,
+    #     lidar_idxs=lidar_idxs,
+    # )
+    # converter.convert()
+
+    # 需要update_infos_to_v2转化成最新格式
+    info_prefix = "carla"
+    create_groundtruth_database(
+        "CarlaDataset",
+        out_dir,
+        info_prefix,
+        f'{out_dir}/infos_convert_v2/{info_prefix}_infos_train.pkl',
+        with_mask=False,
+    )
+
+
 parser = argparse.ArgumentParser(description='Data converter arg parser')
 parser.add_argument('dataset', metavar='kitti', help='name of the dataset')
 parser.add_argument(
@@ -312,10 +349,14 @@ parser.add_argument(
     action='store_true',
     help='''Whether to skip saving image and lidar.
         Only used when dataset is Waymo!''')
+parser.add_argument(
+    "--fusion-type", type=str, default="0,1,2,3", help="fusion type for CarlaDataset"
+)
 args = parser.parse_args()
 
 if __name__ == '__main__':
     from mmengine.registry import init_default_scope
+
     init_default_scope('mmdet3d')
 
     if args.dataset == 'kitti':
@@ -416,5 +457,12 @@ if __name__ == '__main__':
     elif args.dataset == 'semantickitti':
         semantickitti_data_prep(
             info_prefix=args.extra_tag, out_dir=args.out_dir)
+    elif args.dataset == 'carla':
+        carla_data_prep(
+            root_path=args.root_path,
+            out_dir=args.out_dir,
+            workers=args.workers,
+            fusion_type=args.fusion_type,
+        )
     else:
         raise NotImplementedError(f'Don\'t support {args.dataset} dataset.')

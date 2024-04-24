@@ -1,0 +1,784 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    python_version: 3.8.19
+    cli_version: 0.16.6
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1713429800.0
+    t:
+      1:
+      - 1
+      - 5
+      - 37
+      - 38
+      - 41
+      - 53
+      - 55
+      - 82
+      2:
+      - 1
+      - 5
+      - 37
+      - 38
+      - 41
+      - 53
+      - 55
+      - 82
+      3:
+      - 23
+      4: 3.8.19
+      5: 0.16.6
+      8:
+      - 3
+      - 5
+      13: windows-amd64
+voxel_size:
+  desc: null
+  value:
+  - 0.16
+  - 0.16
+  - 4
+model:
+  desc: null
+  value:
+    type: VoxelNet
+    data_preprocessor:
+      type: Det3DDataPreprocessor
+      voxel: true
+      voxel_layer:
+        max_num_points: 32
+        point_cloud_range:
+        - -61.4
+        - -10.6
+        - -0.1
+        - -35.4
+        - 13.3
+        - 3.9
+        voxel_size:
+        - 0.16
+        - 0.16
+        - 4
+        max_voxels:
+        - 16000
+        - 40000
+    voxel_encoder:
+      type: PillarFeatureNet
+      in_channels: 4
+      feat_channels:
+      - 64
+      with_distance: false
+      voxel_size:
+      - 0.16
+      - 0.16
+      - 4
+      point_cloud_range:
+      - -61.4
+      - -10.6
+      - -0.1
+      - -35.4
+      - 13.3
+      - 3.9
+    middle_encoder:
+      type: PointPillarsScatter
+      in_channels: 64
+      output_shape:
+      - 168
+      - 152
+    backbone:
+      type: SECOND
+      in_channels: 64
+      layer_nums:
+      - 3
+      - 5
+      - 5
+      layer_strides:
+      - 2
+      - 2
+      - 2
+      out_channels:
+      - 64
+      - 128
+      - 256
+    neck:
+      type: SECONDFPN
+      in_channels:
+      - 64
+      - 128
+      - 256
+      upsample_strides:
+      - 1
+      - 2
+      - 4
+      out_channels:
+      - 128
+      - 128
+      - 128
+    bbox_head:
+      type: Anchor3DHead
+      num_classes: 3
+      in_channels: 384
+      feat_channels: 384
+      use_direction_classifier: true
+      assign_per_class: true
+      anchor_generator:
+        type: AlignedAnchor3DRangeGenerator
+        ranges:
+        - - -61.4
+          - -10.6
+          - 0.3
+          - -35.4
+          - 13.3
+          - 0.3
+        - - -61.4
+          - -10.6
+          - 0.3
+          - -35.4
+          - 13.3
+          - 0.3
+        - - -61.4
+          - -10.6
+          - 0.3
+          - -35.4
+          - 13.3
+          - 0.3
+        sizes:
+        - - 3.9
+          - 1.6
+          - 1.56
+        - - 0.8
+          - 0.6
+          - 1.73
+        - - 1.76
+          - 0.6
+          - 1.73
+        rotations:
+        - 0
+        - 1.57
+        reshape_out: false
+      diff_rad_by_sin: true
+      bbox_coder:
+        type: DeltaXYZWLHRBBoxCoder
+      loss_cls:
+        type: mmdet.FocalLoss
+        use_sigmoid: true
+        gamma: 2.0
+        alpha: 0.25
+        loss_weight: 1.0
+      loss_bbox:
+        type: mmdet.SmoothL1Loss
+        beta: 0.1111111111111111
+        loss_weight: 2.0
+      loss_dir:
+        type: mmdet.CrossEntropyLoss
+        use_sigmoid: false
+        loss_weight: 0.2
+    train_cfg:
+      assigner:
+      - type: Max3DIoUAssigner
+        iou_calculator:
+          type: mmdet3d.BboxOverlapsNearest3D
+        pos_iou_thr: 0.6
+        neg_iou_thr: 0.45
+        min_pos_iou: 0.45
+        ignore_iof_thr: -1
+      - type: Max3DIoUAssigner
+        iou_calculator:
+          type: mmdet3d.BboxOverlapsNearest3D
+        pos_iou_thr: 0.5
+        neg_iou_thr: 0.35
+        min_pos_iou: 0.35
+        ignore_iof_thr: -1
+      - type: Max3DIoUAssigner
+        iou_calculator:
+          type: mmdet3d.BboxOverlapsNearest3D
+        pos_iou_thr: 0.5
+        neg_iou_thr: 0.35
+        min_pos_iou: 0.35
+        ignore_iof_thr: -1
+      allowed_border: 0
+      pos_weight: -1
+      debug: false
+    test_cfg:
+      use_rotate_nms: true
+      nms_across_levels: false
+      nms_thr: 0.01
+      score_thr: 0.1
+      min_bbox_size: 0
+      nms_pre: 100
+      max_num: 50
+dataset_type:
+  desc: null
+  value: CarlaDataset
+data_root:
+  desc: null
+  value: F:/mmdetection3D/data/raw_infos
+class_names:
+  desc: null
+  value:
+  - Car
+  - Pedestrian
+  - Cyclist
+point_cloud_range:
+  desc: null
+  value:
+  - -61.4
+  - -10.6
+  - -0.1
+  - -35.4
+  - 13.3
+  - 3.9
+input_modality:
+  desc: null
+  value:
+    use_lidar: true
+    use_camera: false
+metainfo:
+  desc: null
+  value:
+    classes:
+    - Car
+    - Pedestrian
+    - Cyclist
+db_sampler:
+  desc: null
+  value:
+    data_root: F:/mmdetection3D/data/raw_infos
+    info_path: F:/mmdetection3D/data/raw_infos/carla_dbinfos_train.pkl
+    rate: 1.0
+    prepare:
+      filter_by_difficulty:
+      - -1
+      filter_by_min_points:
+        Car: 15
+        Pedestrian: 5
+        Cyclist: 10
+    classes:
+    - Car
+    - Pedestrian
+    - Cyclist
+    sample_groups:
+      Car: 12
+      Pedestrian: 6
+      Cyclist: 6
+backend_args:
+  desc: null
+  value:
+    backend: local
+train_pipeline:
+  desc: null
+  value:
+  - type: LoadPointsFromFile
+    coord_type: LIDAR
+    load_dim: 4
+    use_dim: 4
+    backend_args:
+      backend: local
+  - type: LoadAnnotations3D
+    with_bbox_3d: true
+    with_label_3d: true
+    backend_args:
+      backend: local
+  - type: ObjectSample
+    db_sampler:
+      data_root: F:/mmdetection3D/data/raw_infos
+      info_path: F:/mmdetection3D/data/raw_infos/carla_dbinfos_train.pkl
+      rate: 1.0
+      prepare:
+        filter_by_difficulty:
+        - -1
+        filter_by_min_points:
+          Car: 15
+          Pedestrian: 5
+          Cyclist: 10
+      classes:
+      - Car
+      - Pedestrian
+      - Cyclist
+      sample_groups:
+        Car: 12
+        Pedestrian: 6
+        Cyclist: 6
+  - type: ObjectNoise
+    num_try: 100
+    translation_std:
+    - 1.0
+    - 1.0
+    - 0.5
+    global_rot_range:
+    - 0.0
+    - 0.0
+    rot_range:
+    - -0.78539816
+    - 0.78539816
+  - type: RandomFlip3D
+    flip_ratio_bev_horizontal: 0.5
+  - type: GlobalRotScaleTrans
+    rot_range:
+    - -0.78539816
+    - 0.78539816
+    scale_ratio_range:
+    - 0.95
+    - 1.05
+  - type: PointsRangeFilter
+    point_cloud_range:
+    - -61.4
+    - -10.6
+    - -0.1
+    - -35.4
+    - 13.3
+    - 3.9
+  - type: ObjectRangeFilter
+    point_cloud_range:
+    - -61.4
+    - -10.6
+    - -0.1
+    - -35.4
+    - 13.3
+    - 3.9
+  - type: PointShuffle
+  - type: Pack3DDetInputs
+    keys:
+    - points
+    - gt_bboxes_3d
+    - gt_labels_3d
+test_pipeline:
+  desc: null
+  value:
+  - type: LoadPointsFromFile
+    coord_type: LIDAR
+    load_dim: 4
+    use_dim: 4
+    backend_args:
+      backend: local
+  - type: MultiScaleFlipAug3D
+    img_scale:
+    - 1333
+    - 800
+    pts_scale_ratio: 1
+    flip: false
+    transforms:
+    - type: GlobalRotScaleTrans
+      rot_range:
+      - 0
+      - 0
+      scale_ratio_range:
+      - 1.0
+      - 1.0
+      translation_std:
+      - 0
+      - 0
+      - 0
+    - type: RandomFlip3D
+    - type: PointsRangeFilter
+      point_cloud_range:
+      - -61.4
+      - -10.6
+      - -0.1
+      - -35.4
+      - 13.3
+      - 3.9
+  - type: Pack3DDetInputs
+    keys:
+    - points
+eval_pipeline:
+  desc: null
+  value:
+  - type: LoadPointsFromFile
+    coord_type: LIDAR
+    load_dim: 4
+    use_dim: 4
+    backend_args:
+      backend: local
+  - type: Pack3DDetInputs
+    keys:
+    - points
+train_dataloader:
+  desc: null
+  value:
+    batch_size: 6
+    num_workers: 4
+    persistent_workers: true
+    sampler:
+      type: DefaultSampler
+      shuffle: true
+    dataset:
+      type: RepeatDataset
+      times: 2
+      dataset:
+        type: CarlaDataset
+        data_root: F:/mmdetection3D/data/raw_infos
+        ann_file: F:/mmdetection3D/data/raw_infos/infos_convert_v2/carla_infos_train.pkl
+        data_prefix:
+          pts: training/velodyne
+        pipeline:
+        - type: LoadPointsFromFile
+          coord_type: LIDAR
+          load_dim: 4
+          use_dim: 4
+          backend_args:
+            backend: local
+        - type: LoadAnnotations3D
+          with_bbox_3d: true
+          with_label_3d: true
+          backend_args:
+            backend: local
+        - type: ObjectSample
+          db_sampler:
+            data_root: F:/mmdetection3D/data/raw_infos
+            info_path: F:/mmdetection3D/data/raw_infos/carla_dbinfos_train.pkl
+            rate: 1.0
+            prepare:
+              filter_by_difficulty:
+              - -1
+              filter_by_min_points:
+                Car: 15
+                Pedestrian: 5
+                Cyclist: 10
+            classes:
+            - Car
+            - Pedestrian
+            - Cyclist
+            sample_groups:
+              Car: 12
+              Pedestrian: 6
+              Cyclist: 6
+        - type: ObjectNoise
+          num_try: 100
+          translation_std:
+          - 1.0
+          - 1.0
+          - 0.5
+          global_rot_range:
+          - 0.0
+          - 0.0
+          rot_range:
+          - -0.78539816
+          - 0.78539816
+        - type: RandomFlip3D
+          flip_ratio_bev_horizontal: 0.5
+        - type: GlobalRotScaleTrans
+          rot_range:
+          - -0.78539816
+          - 0.78539816
+          scale_ratio_range:
+          - 0.95
+          - 1.05
+        - type: PointsRangeFilter
+          point_cloud_range:
+          - -61.4
+          - -10.6
+          - -0.1
+          - -35.4
+          - 13.3
+          - 3.9
+        - type: ObjectRangeFilter
+          point_cloud_range:
+          - -61.4
+          - -10.6
+          - -0.1
+          - -35.4
+          - 13.3
+          - 3.9
+        - type: PointShuffle
+        - type: Pack3DDetInputs
+          keys:
+          - points
+          - gt_bboxes_3d
+          - gt_labels_3d
+        modality:
+          use_lidar: true
+          use_camera: false
+        test_mode: false
+        metainfo:
+          classes:
+          - Car
+          - Pedestrian
+          - Cyclist
+        box_type_3d: LiDAR
+        backend_args:
+          backend: local
+val_dataloader:
+  desc: null
+  value:
+    batch_size: 1
+    num_workers: 1
+    persistent_workers: true
+    drop_last: false
+    sampler:
+      type: DefaultSampler
+      shuffle: false
+    dataset:
+      type: CarlaDataset
+      data_root: F:/mmdetection3D/data/raw_infos
+      data_prefix:
+        pts: val/velodyne
+      ann_file: F:/mmdetection3D/data/raw_infos/infos_convert_v2/carla_infos_val.pkl
+      pipeline:
+      - type: LoadPointsFromFile
+        coord_type: LIDAR
+        load_dim: 4
+        use_dim: 4
+        backend_args:
+          backend: local
+      - type: MultiScaleFlipAug3D
+        img_scale:
+        - 1333
+        - 800
+        pts_scale_ratio: 1
+        flip: false
+        transforms:
+        - type: GlobalRotScaleTrans
+          rot_range:
+          - 0
+          - 0
+          scale_ratio_range:
+          - 1.0
+          - 1.0
+          translation_std:
+          - 0
+          - 0
+          - 0
+        - type: RandomFlip3D
+        - type: PointsRangeFilter
+          point_cloud_range:
+          - -61.4
+          - -10.6
+          - -0.1
+          - -35.4
+          - 13.3
+          - 3.9
+      - type: Pack3DDetInputs
+        keys:
+        - points
+      modality:
+        use_lidar: true
+        use_camera: false
+      test_mode: true
+      metainfo:
+        classes:
+        - Car
+        - Pedestrian
+        - Cyclist
+      box_type_3d: LiDAR
+      backend_args:
+        backend: local
+test_dataloader:
+  desc: null
+  value:
+    batch_size: 1
+    num_workers: 1
+    persistent_workers: true
+    drop_last: false
+    sampler:
+      type: DefaultSampler
+      shuffle: false
+    dataset:
+      type: CarlaDataset
+      data_root: F:/mmdetection3D/data/raw_infos
+      data_prefix:
+        pts: test/velodyne
+      ann_file: F:/mmdetection3D/data/raw_infos/infos_convert_v2/carla_infos_val.pkl
+      pipeline:
+      - type: LoadPointsFromFile
+        coord_type: LIDAR
+        load_dim: 4
+        use_dim: 4
+        backend_args:
+          backend: local
+      - type: MultiScaleFlipAug3D
+        img_scale:
+        - 1333
+        - 800
+        pts_scale_ratio: 1
+        flip: false
+        transforms:
+        - type: GlobalRotScaleTrans
+          rot_range:
+          - 0
+          - 0
+          scale_ratio_range:
+          - 1.0
+          - 1.0
+          translation_std:
+          - 0
+          - 0
+          - 0
+        - type: RandomFlip3D
+        - type: PointsRangeFilter
+          point_cloud_range:
+          - -61.4
+          - -10.6
+          - -0.1
+          - -35.4
+          - 13.3
+          - 3.9
+      - type: Pack3DDetInputs
+        keys:
+        - points
+      modality:
+        use_lidar: true
+        use_camera: false
+      test_mode: true
+      metainfo:
+        classes:
+        - Car
+        - Pedestrian
+        - Cyclist
+      box_type_3d: LiDAR
+      backend_args:
+        backend: local
+val_evaluator:
+  desc: null
+  value:
+    type: CarlaMetric
+    ann_file: F:/mmdetection3D/data/raw_infos/infos_convert_v2/carla_infos_val.pkl
+    metric: bbox
+    backend_args:
+      backend: local
+test_evaluator:
+  desc: null
+  value:
+    type: CarlaMetric
+    ann_file: F:/mmdetection3D/data/raw_infos/infos_convert_v2/carla_infos_val.pkl
+    metric: bbox
+    backend_args:
+      backend: local
+vis_backends:
+  desc: null
+  value:
+  - type: WandbVisBackend
+    save_dir: F:/mmdetection3D/mmdetection3d/result/wandb_dir
+    init_kwargs:
+      project: carla
+visualizer:
+  desc: null
+  value:
+    type: Visualizer
+    vis_backends:
+    - type: WandbVisBackend
+      save_dir: F:/mmdetection3D/mmdetection3d/result/wandb_dir
+      init_kwargs:
+        project: carla
+    name: visualizer
+lr:
+  desc: null
+  value: 0.0001
+optim_wrapper:
+  desc: null
+  value:
+    type: OptimWrapper
+    optimizer:
+      type: AdamW
+      lr: 0.0001
+      betas:
+      - 0.95
+      - 0.85
+      weight_decay: 0.01
+    clip_grad:
+      max_norm: 10
+      norm_type: 2
+param_scheduler:
+  desc: null
+  value:
+  - type: CosineAnnealingLR
+    T_max: 32.0
+    eta_min: 0.001
+    begin: 0
+    end: 32.0
+    by_epoch: true
+    convert_to_iter_based: true
+  - type: CosineAnnealingLR
+    T_max: 48.0
+    eta_min: 1.0e-08
+    begin: 32.0
+    end: 80
+    by_epoch: true
+    convert_to_iter_based: true
+  - type: CosineAnnealingMomentum
+    T_max: 32.0
+    eta_min: 0.8947368421052632
+    begin: 0
+    end: 32.0
+    by_epoch: true
+    convert_to_iter_based: true
+  - type: CosineAnnealingMomentum
+    T_max: 48.0
+    eta_min: 1
+    begin: 32.0
+    end: 80
+    convert_to_iter_based: true
+train_cfg:
+  desc: null
+  value:
+    by_epoch: true
+    max_epochs: 80
+    val_interval: 5
+val_cfg:
+  desc: null
+  value: {}
+test_cfg:
+  desc: null
+  value: {}
+auto_scale_lr:
+  desc: null
+  value:
+    enable: false
+    base_batch_size: 48
+default_scope:
+  desc: null
+  value: mmdet3d
+default_hooks:
+  desc: null
+  value:
+    timer:
+      type: IterTimerHook
+    logger:
+      type: LoggerHook
+      interval: 50
+    param_scheduler:
+      type: ParamSchedulerHook
+    checkpoint:
+      type: CheckpointHook
+      interval: 5
+      out_dir: F:/mmdetection3D/mmdetection3d/result/checkpoint
+    sampler_seed:
+      type: DistSamplerSeedHook
+    visualization:
+      type: Det3DVisualizationHook
+env_cfg:
+  desc: null
+  value:
+    cudnn_benchmark: false
+    mp_cfg:
+      mp_start_method: fork
+      opencv_num_threads: 0
+    dist_cfg:
+      backend: nccl
+log_processor:
+  desc: null
+  value:
+    type: LogProcessor
+    window_size: 50
+    by_epoch: true
+log_level:
+  desc: null
+  value: INFO
+load_from:
+  desc: null
+  value: null
+resume:
+  desc: null
+  value: false
+epoch_num:
+  desc: null
+  value: 80
+launcher:
+  desc: null
+  value: none
+work_dir:
+  desc: null
+  value: F:\mmdetection3D\mmdetection3d\result\work_dir

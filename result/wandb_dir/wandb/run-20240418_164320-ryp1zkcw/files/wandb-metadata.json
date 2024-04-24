@@ -1,0 +1,57 @@
+{
+    "os": "Windows-10-10.0.22621-SP0",
+    "python": "3.8.19",
+    "heartbeatAt": "2024-04-18T08:43:22.607101",
+    "startedAt": "2024-04-18T08:43:20.281459",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "F:\\mmdetection3D\\mmdetection3d\\configs\\carla\\hv_pointpillars_secfpn_6x8_160e_carla-3d-3class.py",
+        "--work-dir",
+        "F:\\mmdetection3D\\mmdetection3d\\result\\work_dir"
+    ],
+    "state": "running",
+    "program": "F:\\mmdetection3D\\mmdetection3d\\tools\\train.py",
+    "codePathLocal": "train.py",
+    "codePath": "tools\\train.py",
+    "git": {
+        "remote": "https://github.com/open-mmlab/mmdetection3d.git",
+        "commit": "962f093736ffe55c089bc618842a8b8567318c8c"
+    },
+    "email": "1176782344@qq.com",
+    "root": "F:/mmdetection3D/mmdetection3d",
+    "host": "LAPTOP-QP0KKCA9",
+    "username": "ASUS",
+    "executable": "C:\\Users\\ASUS\\.conda\\envs\\openmmlab\\python.exe",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2801.0,
+        "min": 0.0,
+        "max": 2801.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2801.0,
+            "min": 0.0,
+            "max": 2801.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 120.96386337280273,
+            "used": 28.040260314941406
+        }
+    },
+    "gpu": "NVIDIA GeForce GTX 1060",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce GTX 1060",
+            "memory_total": 6442450944
+        }
+    ],
+    "memory": {
+        "total": 15.957191467285156
+    }
+}
